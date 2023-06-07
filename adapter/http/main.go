@@ -38,6 +38,13 @@ func main() {
 	router := mux.NewRouter()
 	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 	router.Handle("/user", http.HandlerFunc(userService.Publish)).Methods("POST")
+
+	// TODO: Implementar os métodos
+	// router.Handle("/user", http.HandlerFunc(userService.Get)).Methods("GET")
+	// router.Handle("/user", http.HandlerFunc(userService.List)).Methods("GET")
+	// router.Handle("/user", http.HandlerFunc(userService.Put)).Methods("PUT")
+	// router.Handle("/user", http.HandlerFunc(userService.Delete)).Methods("DELETE")
+
 	port := viper.GetString("server.port")
 	log.Printf("LISTEN ON PORT: %v", port)
 	http.ListenAndServe(fmt.Sprintf(":%v", port), router)

@@ -4,5 +4,6 @@
   },
   "server": {
     "port": "3001"
-  }
+  },
+  "secret_key": "HsZwxbcwuK/yZBbNeUjTAA=="
 }

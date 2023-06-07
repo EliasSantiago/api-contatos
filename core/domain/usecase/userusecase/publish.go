@@ -3,14 +3,19 @@ package userusecase
 import (
 	"context"
 	"encoding/json"
-	"strings"
 
 	"github.com/EliasSantiago/api-contatos/core/dto"
-	"github.com/google/uuid"
 	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/spf13/viper"
+
+	"crypto/aes"
+	"crypto/cipher"
+	"encoding/base64"
 )
 
-func PublishQueue(ch *amqp.Channel, userRequest *dto.CreateUserResponse) error {
+var bytes = []byte{35, 46, 57, 24, 85, 35, 24, 74, 87, 35, 88, 98, 66, 32, 14, 05}
+
+func PublishQueue(ch *amqp.Channel, userRequest *dto.CreateUserRequest) error {
 	body, err := json.Marshal(userRequest)
 	if err != nil {
 		return err
@@ -32,15 +37,13 @@ func PublishQueue(ch *amqp.Channel, userRequest *dto.CreateUserResponse) error {
 }
 
 func (usecase usecase) Publish(userRequest *dto.CreateUserRequest) error {
-	uuid := uuid.New()
-	response := &dto.CreateUserResponse{
-		ID:        strings.Replace(uuid.String(), "-", "", -1),
-		Name:      userRequest.Name,
-		LastName:  userRequest.LastName,
-		Phone:     userRequest.Phone,
-		Address:   userRequest.Address,
-		DateBirth: userRequest.DateBirth,
-		Cpf:       userRequest.Cpf,
+	user := &dto.CreateUserRequest{
+		Name:      Encrypt(userRequest.Name, viper.GetString("secret_key")),
+		LastName:  Encrypt(userRequest.LastName, viper.GetString("secret_key")),
+		Phone:     Encrypt(userRequest.Phone, viper.GetString("secret_key")),
+		Address:   Encrypt(userRequest.Address, viper.GetString("secret_key")),
+		DateBirth: Encrypt(userRequest.DateBirth, viper.GetString("secret_key")),
+		Cpf:       Encrypt(userRequest.Cpf, viper.GetString("secret_key")),
 	}
 
 	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
@@ -53,6 +56,22 @@ func (usecase usecase) Publish(userRequest *dto.CreateUserRequest) error {
 		return err
 	}
 	defer ch.Close()
-	PublishQueue(ch, response)
+	PublishQueue(ch, user)
 	return nil
+}
+
+func Encode(b []byte) string {
+	return base64.StdEncoding.EncodeToString(b)
+}
+
+func Encrypt(text, MySecret string) string {
+	block, err := aes.NewCipher([]byte(MySecret))
+	if err != nil {
+		return ""
+	}
+	plainText := []byte(text)
+	cfb := cipher.NewCFBEncrypter(block, bytes)
+	cipherText := make([]byte, len(plainText))
+	cfb.XORKeyStream(cipherText, plainText)
+	return Encode(cipherText)
 }

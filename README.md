@@ -12,11 +12,12 @@ App use Golang, RabbitMQ, Postgres
 **Step 2: Create file config.json**
 {
   "database": {
-    "url": "://postgres:postgres@172.22.0.2:5432/postgres"
+    "url": "://postgres:postgres@172.21.0.2:5432/postgres"
   },
   "server": {
     "port": "3001"
-  }
+  },
+  "secret_key": "HsZwxbcwuK/yZBbNeUjTAA=="
 }
 
 To get the database ip, use...

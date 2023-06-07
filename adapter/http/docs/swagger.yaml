@@ -1,0 +1,73 @@
+basePath: /
+definitions:
+  domain.User:
+    properties:
+      address:
+        type: string
+      cpf:
+        type: string
+      date_birth:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    type: object
+  dto.CreateUserRequest:
+    properties:
+      address:
+        type: string
+      cpf:
+        type: string
+      date_birth:
+        type: string
+      last_name:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+    required:
+    - address
+    - date_birth
+    - last_name
+    - name
+    - phone
+    type: object
+host: localhost:3001
+info:
+  contact:
+    name: Elias Fonseca
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Api Contatos
+  version: 1.0.0
+paths:
+  /user:
+    post:
+      consumes:
+      - application/json
+      description: Create new user
+      parameters:
+      - description: user
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.User'
+      summary: Create new user
+      tags:
+      - user
+swagger: "2.0"

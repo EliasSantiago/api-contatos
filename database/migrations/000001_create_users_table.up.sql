@@ -1,0 +1,13 @@
+BEGIN;
+CREATE TABLE users (
+  id VARCHAR(32),
+  name VARCHAR(50) NOT NULL,
+  last_name VARCHAR(50) NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  address VARCHAR(255) NOT NULL,
+  date_birth VARCHAR(10) NOT NULL,
+  cpf VARCHAR(11) NOT NULL,
+  PRIMARY KEY(id),
+  UNIQUE (cpf)
+);
+COMMIT;
